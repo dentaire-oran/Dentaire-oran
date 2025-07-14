@@ -1,6 +1,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name='viewport' content='width=device-width, initial-scale=1'/>
   <title>2ème Année Dentaire - Calculateur</title>
   <style>
     body {
@@ -24,10 +25,11 @@
     .module h3 {
       margin-top: 0;
     }
-    input {
+    input[type="number"] {
       width: 60px;
       padding: 5px;
       margin-right: 10px;
+      margin-top: 5px;
     }
     button {
       padding: 10px 20px;
@@ -37,6 +39,7 @@
       color: white;
       border: none;
       border-radius: 6px;
+      cursor: pointer;
     }
     .result {
       margin-top: 30px;
@@ -52,14 +55,28 @@
     .warning { background-color: #fff3cd; color: #856404; }
     .danger  { background-color: #f8d7da; color: #721c24; }
     .moyenne-module { margin-top: 10px; font-size: 15px; color: #333; font-style: italic; }
+    .manual-moyenne-label {
+      font-size: 13px; 
+      font-style: italic;
+      margin-left: 15px;
+      margin-right: 8px;
+      color: #2e5c4d;
+    }
+    .manual-moyenne-input {
+      width: 80px;
+      padding: 5px;
+      margin-left: 8px;
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
   <h1>Calculateur 2ème Année Dentaire</h1>
   <form id="form"></form>
-  <button onclick="calculer()">Calculer</button>
-  <div class="result" id="resultat"></div>
-  <script>
+  <button type="button" onclick="calculer()">Calculer</button>
+  <button type="button" onclick="saveResults()">Enregistrer les résultats</button>
+  <button type="button" onclick="loadResults()">Charger les résultats</button>
+  <div class="result" id="resultat"></div>  <script>
     const modules = [
       { nom: "OCE", coef: 5, emd1: true, emd2: true, td: false, tp: true, tpDouble: true },
       { nom: "Prothèse", coef: 5, emd1: true, emd2: true, td: false, tp: true, tpDouble: true },
@@ -76,82 +93,151 @@
       { nom: "Info", coef: 1, emd1: true, emd2: true, td: false, tp: false },
       { nom: "Physio", coef: 1, emd1: false, emd2: true, td: false, tp: false },
       { nom: "Anglais", coef: 1, emd1: true, emd2: false, td: false, tp: false }
-    ];const form = document.getElementById("form");
+    ];
 
-modules.forEach((mod, i) => {
-  const div = document.createElement("div");
-  div.className = "module";
-  div.innerHTML = `<h3>${mod.nom} (coef ${mod.coef})</h3>`;
-  if (mod.emd1) div.innerHTML += `EMD S1: <input type="number" step="0.01" min="0" max="20" id="${i}_emd1">`;
-  if (mod.emd2) div.innerHTML += `EMD S2: <input type="number" step="0.01" min="0" max="20" id="${i}_emd2">`;
-  if (mod.td) div.innerHTML += `TD: <input type="number" step="0.01" min="0" max="20" id="${i}_td">`;
-  if (mod.tp) div.innerHTML += `TP: <input type="number" step="0.01" min="0" max="20" id="${i}_tp">`;
-  div.innerHTML += `<div class="moyenne-module" id="${i}_moyenne_module"></div>`;
-  form.appendChild(div);
-});
+    const form = document.getElementById("form");
 
-function calculer() {
-  let total = 0;
-  let totalCoef = 0;
-  let modulesMoinsDe5 = [];
-  let modulesMoinsDe10 = [];
-
-  modules.forEach((mod, i) => {
-    let moyEMD = 0;
-    let nbEMD = 0;
-    if (mod.emd1) { moyEMD += Number(document.getElementById(`${i}_emd1`).value) || 0; nbEMD++; }
-    if (mod.emd2) { moyEMD += Number(document.getElementById(`${i}_emd2`).value) || 0; nbEMD++; }
-
-    moyEMD = nbEMD > 0 ? moyEMD / nbEMD : 0;
-
-    let autresNotes = [];
-    if (mod.td) autresNotes.push(Number(document.getElementById(`${i}_td`).value) || 0);
-    if (mod.tp) {
-      let tp = Number(document.getElementById(`${i}_tp`).value) || 0;
-      autresNotes.push(mod.tpDouble ? tp * 2 : tp);
-    }
-
-    let totalNote = moyEMD + autresNotes.reduce((a, b) => a + b, 0);
-
-    let diviseur = 1;
-    autresNotes.forEach((note, index) => {
-      if (mod.tp && mod.tpDouble && index === autresNotes.length - 1) {
-        diviseur += 2;
-      } else {
-        diviseur += 1;
-      }
+    modules.forEach((mod, i) => {
+      const div = document.createElement("div");
+      div.className = "module";
+      div.innerHTML = `
+        <h3>${mod.nom}</h3>
+        <label class="manual-moyenne-label">
+          <input type="checkbox" id="${i}_manual_moyenne_cb" onchange="toggleManualMoyenne(${i})">
+          Entrer la moyenne manuellement
+        </label><br>
+        <input type="number" step="0.01" min="0" max="20" style="display:none;" class="manual-moyenne-input" id="${i}_manual_moyenne" placeholder="Moyenne du module">
+        <div id="${i}_notes_fields">
+          ${mod.emd1 ? `EMD S1: <input type="number" step="0.01" min="0" max="20" id="${i}_emd1"><br>` : ""}
+          ${mod.emd2 ? `EMD S2: <input type="number" step="0.01" min="0" max="20" id="${i}_emd2"><br>` : ""}
+          ${mod.td ? `TD: <input type="number" step="0.01" min="0" max="20" id="${i}_td"><br>` : ""}
+          ${mod.tp ? `TP: <input type="number" step="0.01" min="0" max="20" id="${i}_tp"><br>` : ""}
+        </div>
+        <div class="moyenne-module" id="${i}_moyenne_module"></div>
+      `;
+      form.appendChild(div);
     });
 
-    let moyenne = totalNote / diviseur;
+    function toggleManualMoyenne(i) {
+      const cb = document.getElementById(`${i}_manual_moyenne_cb`);
+      const manualInput = document.getElementById(`${i}_manual_moyenne`);
+      const notesFields = document.getElementById(`${i}_notes_fields`);
 
-    document.getElementById(`${i}_moyenne_module`).textContent = `Moyenne du module : ${moyenne.toFixed(2)}`;
+      if (cb.checked) {
+        manualInput.style.display = "inline-block";
+        manualInput.disabled = false;
+        notesFields.style.display = "none";
+      } else {
+        manualInput.style.display = "none";
+        manualInput.disabled = true;
+        notesFields.style.display = "block";
+      }
+    }
 
-    if (moyenne < 5) modulesMoinsDe5.push(mod.nom);
-    else if (moyenne < 10) modulesMoinsDe10.push(mod.nom);
+    function calculer() {
+      let total = 0;
+      let totalCoef = 0;
+      let modulesMoinsDe5 = [];
+      let modulesMoinsDe10 = [];
 
-    total += moyenne * mod.coef;
-    totalCoef += mod.coef;
-  });
+      modules.forEach((mod, i) => {
+        const cb = document.getElementById(`${i}_manual_moyenne_cb`);
+        const manualInput = document.getElementById(`${i}_manual_moyenne`);
+        let moyenne = 0;
 
-  let moyenneGen = (total / totalCoef).toFixed(3);
-  let html = `<div class="alert">Moyenne générale : <strong>${moyenneGen}</strong></div>`;
+        if (cb.checked && manualInput.value !== "") {
+          moyenne = Number(manualInput.value) || 0;
+        } else {
+          let totalNote = 0;
+          let diviseur = 0;
 
-  if (moyenneGen >= 10 && modulesMoinsDe5.length === 0) {
-    html += `<div class="alert success">Félicitations 🎉, année validée.</div>`;
-  } else if (moyenneGen < 10 && modulesMoinsDe5.length > 0) {
-    html += `<div class="alert danger"><strong>Année non validée</strong><br>`;
-    html += `Moyenne insuffisante + modules < 5.</div>`;
-    html += `<div class="alert warning">Modules < 5 :<ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-    html += `<div class="alert warning">Modules entre 5 et 10 :<ul>${modulesMoinsDe10.filter(m => !modulesMoinsDe5.includes(m)).map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-  } else if (modulesMoinsDe5.length > 0) {
-    html += `<div class="alert danger">Rattrapage obligatoire dans les modules suivants :<ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-  } else if (moyenneGen < 10) {
-    html += `<div class="alert warning">Moyenne générale insuffisante. Modules < 10 :<ul>${modulesMoinsDe10.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-  }
+          if (mod.emd1) {
+            totalNote += Number(document.getElementById(`${i}_emd1`).value) || 0;
+            diviseur++;
+          }
+          if (mod.emd2) {
+            totalNote += Number(document.getElementById(`${i}_emd2`).value) || 0;
+            diviseur++;
+          }
+          if (mod.td) {
+            totalNote += Number(document.getElementById(`${i}_td`).value) || 0;
+            diviseur++;
+          }
+          if (mod.tp) {
+            let tpNote = Number(document.getElementById(`${i}_tp`).value) || 0;
+            totalNote += mod.tpDouble ? tpNote * 2 : tpNote;
+            diviseur += mod.tpDouble ? 2 : 1;
+          }
 
-  document.getElementById("resultat").innerHTML = html;
-}
+          moyenne = diviseur > 0 ? totalNote / diviseur : 0;
+        }
 
-  </script>
-</body>
+        document.getElementById(`${i}_moyenne_module`).textContent = `Moyenne du module : ${moyenne.toFixed(2)}`;
+
+        if (moyenne < 5) modulesMoinsDe5.push(mod.nom);
+        else if (moyenne < 10) modulesMoinsDe10.push(mod.nom);
+
+        total += moyenne * mod.coef;
+        totalCoef += mod.coef;
+      });
+
+      const moyenneGenBrute = total / totalCoef;
+      const moyenneGen = moyenneGenBrute.toFixed(3);
+
+      let html = `<div class="alert">Moyenne générale : <strong>${moyenneGen}</strong></div>`;
+
+      if (moyenneGenBrute >= 10 && modulesMoinsDe5.length === 0) {
+        html += `<div class="alert success">Félicitations 🎉, année validée.</div>`;
+      } else if (moyenneGenBrute < 10 && modulesMoinsDe5.length > 0) {
+        html += `<div class="alert danger"><strong>Année non validée</strong><br>Moyenne insuffisante + modules < 5.</div>`;
+        html += `<div class="alert warning">Modules < 5 :<ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+        html += `<div class="alert warning">Modules entre 5 et 10 :<ul>${modulesMoinsDe10.filter(m => !modulesMoinsDe5.includes(m)).map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+      } else if (modulesMoinsDe5.length > 0) {
+        html += `<div class="alert danger">Rattrapage obligatoire dans les modules suivants :<ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+      } else if (moyenneGenBrute < 10) {
+        html += `<div class="alert warning">Moyenne générale insuffisante. Modules < 10 :<ul>${modulesMoinsDe10.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+      }
+
+      document.getElementById("resultat").innerHTML = html;
+    }
+
+    function saveResults() {
+      let data = {};
+      modules.forEach((mod, i) => {
+        data[`${i}_manual_moyenne_cb`] = document.getElementById(`${i}_manual_moyenne_cb`).checked;
+        data[`${i}_manual_moyenne`] = document.getElementById(`${i}_manual_moyenne`).value;
+        if (mod.emd1) data[`${i}_emd1`] = document.getElementById(`${i}_emd1`).value;
+        if (mod.emd2) data[`${i}_emd2`] = document.getElementById(`${i}_emd2`).value;
+        if (mod.td) data[`${i}_td`] = document.getElementById(`${i}_td`).value;
+        if (mod.tp) data[`${i}_tp`] = document.getElementById(`${i}_tp`).value;
+      });
+      localStorage.setItem("annee2_results", JSON.stringify(data));
+      alert("Résultats enregistrés !");
+    }
+
+    function loadResults() {
+      let data = JSON.parse(localStorage.getItem("annee2_results") || '{}');
+      modules.forEach((mod, i) => {
+        if (typeof data[`${i}_manual_moyenne_cb`] !== "undefined") {
+          document.getElementById(`${i}_manual_moyenne_cb`).checked = data[`${i}_manual_moyenne_cb`];
+        }
+        if (typeof data[`${i}_manual_moyenne`] !== "undefined") {
+          document.getElementById(`${i}_manual_moyenne`).value = data[`${i}_manual_moyenne`];
+        }
+        if (mod.emd1 && typeof data[`${i}_emd1`] !== "undefined") document.getElementById(`${i}_emd1`).value = data[`${i}_emd1`];
+        if (mod.emd2 && typeof data[`${i}_emd2`] !== "undefined") document.getElementById(`${i}_emd2`).value = data[`${i}_emd2`];
+        if (mod.td && typeof data[`${i}_td`] !== "undefined") document.getElementById(`${i}_td`).value = data[`${i}_td`];
+        if (mod.tp && typeof data[`${i}_tp`] !== "undefined") document.getElementById(`${i}_tp`).value = data[`${i}_tp`];
+        toggleManualMoyenne(i);
+      });
+      calculer();
+      alert("Résultats chargés !");
+    }
+
+    window.onload = () => {
+      modules.forEach((mod, i) => {
+        toggleManualMoyenne(i);
+      });
+    };
+  </script></body>
 </html>
