@@ -1,0 +1,157 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>2ème Année Dentaire - Calculateur</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #2e5c4d;
+    }
+    .module {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      background-color: #fff;
+    }
+    .module h3 {
+      margin-top: 0;
+    }
+    input {
+      width: 60px;
+      padding: 5px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+    .result {
+      margin-top: 30px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .alert {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
+    }
+    .success { background-color: #d4edda; color: #155724; }
+    .warning { background-color: #fff3cd; color: #856404; }
+    .danger  { background-color: #f8d7da; color: #721c24; }
+    .moyenne-module { margin-top: 10px; font-size: 15px; color: #333; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>Calculateur 2ème Année Dentaire</h1>
+  <form id="form"></form>
+  <button onclick="calculer()">Calculer</button>
+  <div class="result" id="resultat"></div>
+  <script>
+    const modules = [
+      { nom: "OCE", coef: 5, emd1: true, emd2: true, td: false, tp: true, tpDouble: true },
+      { nom: "Prothèse", coef: 5, emd1: true, emd2: true, td: false, tp: true, tpDouble: true },
+      { nom: "AH", coef: 4, emd1: true, emd2: true, td: false, tp: true, tpDouble: true },
+      { nom: "AD", coef: 3, emd1: true, emd2: false, td: false, tp: true, tpDouble: true },
+      { nom: "ODF", coef: 3, emd1: true, emd2: true, td: false, tp: false },
+      { nom: "Patho", coef: 3, emd1: false, emd2: true, td: false, tp: false },
+      { nom: "Paro", coef: 3, emd1: false, emd2: true, td: true, tp: false },
+      { nom: "Biomat", coef: 2, emd1: true, emd2: true, td: false, tp: false },
+      { nom: "Histo", coef: 2, emd1: true, emd2: false, td: true, tp: false },
+      { nom: "Microbio", coef: 2, emd1: true, emd2: true, td: false, tp: false },
+      { nom: "Hygiène", coef: 1, emd1: true, emd2: false, td: false, tp: false },
+      { nom: "Immuno", coef: 1, emd1: false, emd2: true, td: false, tp: false },
+      { nom: "Info", coef: 1, emd1: true, emd2: true, td: false, tp: false },
+      { nom: "Physio", coef: 1, emd1: false, emd2: true, td: false, tp: false },
+      { nom: "Anglais", coef: 1, emd1: true, emd2: false, td: false, tp: false }
+    ];const form = document.getElementById("form");
+
+modules.forEach((mod, i) => {
+  const div = document.createElement("div");
+  div.className = "module";
+  div.innerHTML = `<h3>${mod.nom} (coef ${mod.coef})</h3>`;
+  if (mod.emd1) div.innerHTML += `EMD S1: <input type="number" step="0.01" min="0" max="20" id="${i}_emd1">`;
+  if (mod.emd2) div.innerHTML += `EMD S2: <input type="number" step="0.01" min="0" max="20" id="${i}_emd2">`;
+  if (mod.td) div.innerHTML += `TD: <input type="number" step="0.01" min="0" max="20" id="${i}_td">`;
+  if (mod.tp) div.innerHTML += `TP: <input type="number" step="0.01" min="0" max="20" id="${i}_tp">`;
+  div.innerHTML += `<div class="moyenne-module" id="${i}_moyenne_module"></div>`;
+  form.appendChild(div);
+});
+
+function calculer() {
+  let total = 0;
+  let totalCoef = 0;
+  let modulesMoinsDe5 = [];
+  let modulesMoinsDe10 = [];
+
+  modules.forEach((mod, i) => {
+    let moyEMD = 0;
+    let nbEMD = 0;
+    if (mod.emd1) { moyEMD += Number(document.getElementById(`${i}_emd1`).value) || 0; nbEMD++; }
+    if (mod.emd2) { moyEMD += Number(document.getElementById(`${i}_emd2`).value) || 0; nbEMD++; }
+
+    moyEMD = nbEMD > 0 ? moyEMD / nbEMD : 0;
+
+    let autresNotes = [];
+    if (mod.td) autresNotes.push(Number(document.getElementById(`${i}_td`).value) || 0);
+    if (mod.tp) {
+      let tp = Number(document.getElementById(`${i}_tp`).value) || 0;
+      autresNotes.push(mod.tpDouble ? tp * 2 : tp);
+    }
+
+    let totalNote = moyEMD + autresNotes.reduce((a, b) => a + b, 0);
+
+    let diviseur = 1;
+    autresNotes.forEach((note, index) => {
+      if (mod.tp && mod.tpDouble && index === autresNotes.length - 1) {
+        diviseur += 2;
+      } else {
+        diviseur += 1;
+      }
+    });
+
+    let moyenne = totalNote / diviseur;
+
+    document.getElementById(`${i}_moyenne_module`).textContent = `Moyenne du module : ${moyenne.toFixed(2)}`;
+
+    if (moyenne < 5) modulesMoinsDe5.push(mod.nom);
+    else if (moyenne < 10) modulesMoinsDe10.push(mod.nom);
+
+    total += moyenne * mod.coef;
+    totalCoef += mod.coef;
+  });
+
+  let moyenneGen = (total / totalCoef).toFixed(3);
+  let html = `<div class="alert">Moyenne générale : <strong>${moyenneGen}</strong></div>`;
+
+  if (moyenneGen >= 10 && modulesMoinsDe5.length === 0) {
+    html += `<div class="alert success">Félicitations 🎉, année validée.</div>`;
+  } else if (moyenneGen < 10 && modulesMoinsDe5.length > 0) {
+    html += `<div class="alert danger"><strong>Année non validée</strong><br>`;
+    html += `Moyenne insuffisante + modules < 5.</div>`;
+    html += `<div class="alert warning">Modules < 5 :<ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+    html += `<div class="alert warning">Modules entre 5 et 10 :<ul>${modulesMoinsDe10.filter(m => !modulesMoinsDe5.includes(m)).map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+  } else if (modulesMoinsDe5.length > 0) {
+    html += `<div class="alert danger">Rattrapage obligatoire dans les modules suivants :<ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+  } else if (moyenneGen < 10) {
+    html += `<div class="alert warning">Moyenne générale insuffisante. Modules < 10 :<ul>${modulesMoinsDe10.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+  }
+
+  document.getElementById("resultat").innerHTML = html;
+}
+
+  </script>
+</body>
+</html>
