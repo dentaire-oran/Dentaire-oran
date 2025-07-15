@@ -192,8 +192,22 @@
     <div class="module">
       <h3><i class="ph ph-first-aid-kit"></i> Médecine</h3>
     </div>
+    
+    <div class="module">
+      <h3>Options</h3>
+      <div class="button-group">
+        
+        <a href="mailto:dentaireoranmoy@gmail.com" class="btn">
+          <i class="ph ph-envelope"></i> Me Contacter
+        </a>
+        
+        <button type="button" id="install-button" class="btn" style="display: none;">
+          <i class="ph ph-download-simple"></i> Installer l'application
+        </button>
 
-  </div>
+      </div>
+    </div>
+    </div>
 
   <div id="notification-container"></div>
 
@@ -220,10 +234,41 @@
   </script>
 
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/Dentaire-oran/service-worker.js');
-  }
-</script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/Dentaire-oran/service-worker.js');
+    }
+
+    // ================== LOGIQUE AJOUTÉE POUR LE BOUTON D'INSTALLATION ==================
+    let deferredPrompt;
+    const installButton = document.getElementById('install-button');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Empêche l'affichage de la mini-barre d'installation par défaut
+      e.preventDefault();
+      // Sauvegarde l'événement pour plus tard
+      deferredPrompt = e;
+      // Affiche notre bouton personnalisé
+      installButton.style.display = 'flex';
+    });
+
+    installButton.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        // Déclenche la fenêtre d'installation
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        // On ne peut utiliser l'événement qu'une seule fois
+        deferredPrompt = null;
+        // Cache le bouton après l'interaction
+        installButton.style.display = 'none';
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      console.log('PWA installée avec succès');
+    });
+    // ================== FIN DE LA LOGIQUE AJOUTÉE ==================
+  </script>
 
 </body>
 </html>
