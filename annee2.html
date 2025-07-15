@@ -1,243 +1,479 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html><html lang="fr">
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name='viewport' content='width=device-width, initial-scale=1'/>
-  <title>2ème Année Dentaire - Calculateur</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculateur 2e Année Dentaire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/phosphor-icons"></script>
   <style>
+    :root {
+      --primary: #4f8cff;
+      --accent: #18a689;
+      --danger: #ff647c;
+      --success: #5ec576;
+      --warning: #ffe082;
+      --bg: #f6faff;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --blur: 12px;
+      --radius: 18px;
+      --font: 'Inter', sans-serif;
+      --shadow: 0 6px 30px rgba(79, 140, 255, 0.09), 0 1.5px 6px rgba(79, 140, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
-      font-family: sans-serif;
-      background-color: #f9f9f9;
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
+      font-family: var(--font);
+      background: linear-gradient(120deg, #e0eafc, #cfdef3);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #222;
+      min-height: 100vh;
     }
-    h1 {
+
+    header {
+      width: 100%;
+      padding: 32px 0 12px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow);
       text-align: center;
-      color: #2e5c4d;
+      color: #fff;
     }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 520px;
+      margin-top: 28px;
+      padding: 0 12px 32px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .module {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 15px;
-      margin: 15px 0;
-      background-color: #fff;
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin: 18px 0;
+      transition: transform 0.25s ease-in-out;
     }
+
+    .module:hover {
+      transform: translateY(-2px) scale(1.01);
+    }
+
     .module h3 {
-      margin-top: 0;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+      color: var(--primary);
     }
-    input[type="number"] {
-      width: 60px;
-      padding: 5px;
-      margin-right: 10px;
-      margin-top: 5px;
+
+    .fields label {
+      display: block;
+      margin-bottom: 8px;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 6px;
+
+    .fields input[type="number"],
+    .manual-moyenne-input {
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 1em;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      width: 95px;
+      transition: all 0.3s ease;
+      background: #fff;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .fields input[type="number"]:focus,
+    .manual-moyenne-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(24, 166, 137, 0.2);
+      transform: scale(1.03);
+    }
+
+    .manual-moyenne-label {
+      color: var(--accent);
+      font-size: 0.95em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
       cursor: pointer;
     }
-    .result {
-      margin-top: 30px;
-      font-size: 18px;
-      font-weight: bold;
+
+    .fade-slide {
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.4s ease;
+      max-height: 500px;
+      opacity: 1;
     }
+
+    .fade-slide.hidden {
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 12px 24px;
+      font-size: 1em;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:active { transform: scale(0.96); }
+    .btn:focus { filter: brightness(1.1); }
+
     .alert {
-      padding: 10px;
-      margin-top: 15px;
-      border-radius: 5px;
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin: 12px 0;
+      font-size: 1em;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+      background: white;
     }
-    .success { background-color: #d4edda; color: #155724; }
-    .warning { background-color: #fff3cd; color: #856404; }
-    .danger  { background-color: #f8d7da; color: #721c24; }
-    .moyenne-module { margin-top: 10px; font-size: 15px; color: #333; font-style: italic; }
-    .manual-moyenne-label {
-      font-size: 13px; 
-      font-style: italic;
-      margin-left: 15px;
-      margin-right: 8px;
-      color: #2e5c4d;
+
+    .alert.success { background: var(--success); color: #fff; }
+    .alert.warning { background: var(--warning); color: #7d5a00; }
+    .alert.danger { background: var(--danger); color: #fff; }
+
+    ul { margin: 6px 0 0 20px; padding: 0; }
+
+    @media (max-width: 600px) {
+      .content { max-width: 98vw; }
+      .fields input[type="number"], .manual-moyenne-input { width: 80vw; max-width: 99px; }
+      .actions { flex-direction: column; gap: 8px; }
     }
-    .manual-moyenne-input {
-      width: 80px;
-      padding: 5px;
-      margin-left: 8px;
-      margin-bottom: 5px;
+
+    .moyenne-module { margin-top: 3px; font-size: 0.97em; color: #2d3e50; font-style: italic; }
+    .result { margin-top: 30px; font-size: 1.1em; font-weight: bold; }
+
+    #resultat {
+      opacity: 0;
+      transform: translateY(40px) scale(0.98);
+      pointer-events: none;
+      transition: opacity 0.55s cubic-bezier(.39,.58,.57,1.01), transform 0.55s cubic-bezier(.39,.58,.57,1.01);
     }
+    #resultat.show-result {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    #notification-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .notification {
+      padding: 14px 22px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      animation: slideInUp 0.4s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .notification.fade-out {
+      animation: fadeOutDown 0.4s ease-in forwards;
+    }
+    
+    @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
+
+    .notification.success { background: var(--success); }
+    .notification.warning { background: var(--danger); }
   </style>
 </head>
 <body>
-  <h1>Calculateur 2ème Année Dentaire</h1>
-  <form id="form"></form>
-  <button type="button" onclick="calculer()">Calculer</button>
-  <button type="button" onclick="saveResults()">Enregistrer les résultats</button>
-  <button type="button" onclick="loadResults()">Charger les résultats</button>
-  <div class="result" id="resultat"></div>  <script>
+  <header>
+    <h1><i class="ph ph-tooth"></i> Calculateur 2<sup>ème</sup> Année Dentaire</h1>
+  </header>
+  <div class="content">
+    <form id="form"></form>
+    <div class="actions">
+      <button type="button" class="btn" onclick="calculer()"><i class="ph ph-calculator"></i> Calculer</button>
+      <button type="button" class="btn" onclick="saveResults()"><i class="ph ph-floppy-disk"></i> Enregistrer</button>
+      <button type="button" class="btn" onclick="loadResults()"><i class="ph ph-upload-simple"></i> Charger</button>
+    </div>
+    <div class="result" id="resultat"></div>
+  </div>
+
+  <div id="notification-container"></div>
+
+  <script>
     const modules = [
-      { nom: "OCE", coef: 5, emd1: true, emd2: true, td: false, tp: true, tpDouble: true },
-      { nom: "Prothèse", coef: 5, emd1: true, emd2: true, td: false, tp: true, tpDouble: true },
-      { nom: "AH", coef: 4, emd1: true, emd2: true, td: false, tp: true, tpDouble: true },
-      { nom: "AD", coef: 3, emd1: true, emd2: false, td: false, tp: true, tpDouble: true },
-      { nom: "ODF", coef: 3, emd1: true, emd2: true, td: false, tp: false },
-      { nom: "Patho", coef: 3, emd1: false, emd2: true, td: false, tp: false },
-      { nom: "Paro", coef: 3, emd1: false, emd2: true, td: true, tp: false },
-      { nom: "Biomat", coef: 2, emd1: true, emd2: true, td: false, tp: false },
-      { nom: "Histo", coef: 2, emd1: true, emd2: false, td: true, tp: false },
-      { nom: "Microbio", coef: 2, emd1: true, emd2: true, td: false, tp: false },
-      { nom: "Hygiène", coef: 1, emd1: true, emd2: false, td: false, tp: false },
-      { nom: "Immuno", coef: 1, emd1: false, emd2: true, td: false, tp: false },
-      { nom: "Info", coef: 1, emd1: true, emd2: true, td: false, tp: false },
-      { nom: "Physio", coef: 1, emd1: false, emd2: true, td: false, tp: false },
-      { nom: "Anglais", coef: 1, emd1: true, emd2: false, td: false, tp: false }
+      { nom: "OCE", coef: 5, emd1: true, emd2: true, td: false, tp: true, icon: "ph ph-seal" },
+      { nom: "Prothèse", coef: 5, emd1: true, emd2: true, td: false, tp: true, icon: "ph ph-puzzle-piece" },
+      { nom: "AH", coef: 4, emd1: true, emd2: true, td: false, tp: true, icon: "ph ph-heartbeat" },
+      { nom: "AD", coef: 3, emd1: true, emd2: false, td: false, tp: true, icon: "ph ph-microscope" },
+      { nom: "ODF", coef: 3, emd1: true, emd2: true, td: false, tp: false, icon: "ph ph-smiley" },
+      { nom: "Patho", coef: 3, emd1: false, emd2: true, td: false, tp: false, icon: "ph ph-virus" },
+      { nom: "Paro", coef: 3, emd1: false, emd2: true, td: true, tp: false, icon: "ph ph-leaf" },
+      { nom: "Biomat", coef: 2, emd1: true, emd2: true, td: false, tp: false, icon: "ph ph-atom" },
+      { nom: "Histo", coef: 2, emd1: true, emd2: false, td: true, tp: false, icon: "ph ph-cube" },
+      { nom: "Microbio", coef: 2, emd1: true, emd2: true, td: false, tp: false, icon: "ph ph-bacteria" },
+      { nom: "Hygiène", coef: 1, emd1: true, emd2: false, td: false, tp: false, icon: "ph ph-drop" },
+      { nom: "Immuno", coef: 1, emd1: false, emd2: true, td: false, tp: false, icon: "ph ph-shield-check" },
+      { nom: "Info", coef: 1, emd1: true, emd2: true, td: false, tp: false, icon: "ph ph-devices" },
+      { nom: "Physio", coef: 1, emd1: false, emd2: true, td: false, tp: false, icon: "ph ph-activity" },
+      { nom: "Anglais", coef: 1, emd1: true, emd2: false, td: false, tp: false, icon: "ph ph-translate" }
     ];
 
-    const form = document.getElementById("form");
+    let form;
 
-    modules.forEach((mod, i) => {
-      const div = document.createElement("div");
-      div.className = "module";
-      div.innerHTML = `
-        <h3>${mod.nom}</h3>
-        <label class="manual-moyenne-label">
-          <input type="checkbox" id="${i}_manual_moyenne_cb" onchange="toggleManualMoyenne(${i})">
-          Entrer la moyenne manuellement
-        </label><br>
-        <input type="number" step="0.01" min="0" max="20" style="display:none;" class="manual-moyenne-input" id="${i}_manual_moyenne" placeholder="Moyenne du module">
-        <div id="${i}_notes_fields">
-          ${mod.emd1 ? `EMD S1: <input type="number" step="0.01" min="0" max="20" id="${i}_emd1"><br>` : ""}
-          ${mod.emd2 ? `EMD S2: <input type="number" step="0.01" min="0" max="20" id="${i}_emd2"><br>` : ""}
-          ${mod.td ? `TD: <input type="number" step="0.01" min="0" max="20" id="${i}_td"><br>` : ""}
-          ${mod.tp ? `TP: <input type="number" step="0.01" min="0" max="20" id="${i}_tp"><br>` : ""}
-        </div>
-        <div class="moyenne-module" id="${i}_moyenne_module"></div>
-      `;
-      form.appendChild(div);
-    });
+    function init() {
+      form = document.getElementById("form");
+      if (form) {
+        modules.forEach((mod, i) => {
+          const div = document.createElement("div");
+          div.className = "module";
+          div.innerHTML = `
+            <h3><i class="${mod.icon}"></i> ${mod.nom} <span style="font-size:.96em;color:#888;font-weight:400;">[Coef ${mod.coef}]</span></h3>
+            <label class="manual-moyenne-label">
+              <input type="checkbox" id="${i}manualmoyenne_cb" onchange="toggleManualMoyenne(${i})">
+              <i class="ph ph-pencil-simple"></i> Entrer la moyenne manuellement
+            </label>
+            <input type="number" step="0.01" min="0" max="20" class="manual-moyenne-input fade-slide hidden" id="${i}manualmoyenne" placeholder="Moyenne du module">
+            <div class="fields fade-slide" id="${i}notesfields">
+              ${mod.emd1 ? `<label>EMD S1 <input type="number" step="0.01" min="0" max="20" id="${i}_emd1"></label>` : ""}
+              ${mod.emd2 ? `<label>EMD S2 <input type="number" step="0.01" min="0" max="20" id="${i}_emd2"></label>` : ""}
+              ${mod.td ? `<label>TD <input type="number" step="0.01" min="0" max="20" id="${i}_td"></label>` : ""}
+              ${mod.tp ? `<label>TP <input type="number" step="0.01" min="0" max="20" id="${i}_tp"></label>` : ""}
+            </div>
+            <div class="moyenne-module" id="${i}moyennemodule"></div>
+          `;
+          form.appendChild(div);
+        });
+        modules.forEach((mod, i) => toggleManualMoyenne(i));
+      } else {
+        console.error("L'élément 'form' n'a pas été trouvé dans le DOM.");
+      }
+    }
 
     function toggleManualMoyenne(i) {
-      const cb = document.getElementById(`${i}_manual_moyenne_cb`);
-      const manualInput = document.getElementById(`${i}_manual_moyenne`);
-      const notesFields = document.getElementById(`${i}_notes_fields`);
-
-      if (cb.checked) {
-        manualInput.style.display = "inline-block";
-        manualInput.disabled = false;
-        notesFields.style.display = "none";
-      } else {
-        manualInput.style.display = "none";
-        manualInput.disabled = true;
-        notesFields.style.display = "block";
+      const cb = document.getElementById(`${i}manualmoyenne_cb`);
+      const manualInput = document.getElementById(`${i}manualmoyenne`);
+      const notesFields = document.getElementById(`${i}notesfields`);
+      if (cb && manualInput && notesFields) {
+        if (cb.checked) {
+          manualInput.classList.remove("hidden");
+          notesFields.classList.add("hidden");
+        } else {
+          notesFields.classList.remove("hidden");
+          manualInput.classList.add("hidden");
+        }
       }
     }
 
     function calculer() {
-      let total = 0;
-      let totalCoef = 0;
+      let totalPoints = 0;
+      let totalCoefsAnnee = 0;
       let modulesMoinsDe5 = [];
       let modulesMoinsDe10 = [];
 
       modules.forEach((mod, i) => {
-        const cb = document.getElementById(`${i}_manual_moyenne_cb`);
-        const manualInput = document.getElementById(`${i}_manual_moyenne`);
-        let moyenne = 0;
+        const cb = document.getElementById(`${i}manualmoyenne_cb`);
+        const manualInput = document.getElementById(`${i}manualmoyenne`);
+        let moyenneModule = 0;
+        let isModuleFilled = false;
 
-        if (cb.checked && manualInput.value !== "") {
-          moyenne = Number(manualInput.value) || 0;
+        if (cb.checked && manualInput.value.trim() !== '') {
+          moyenneModule = parseFloat(manualInput.value.replace(',', '.')) || 0;
+          isModuleFilled = true;
         } else {
-          let totalNote = 0;
-          let diviseur = 0;
+          let totalPondere = 0;
+          let totalCoefsModule = 0;
 
-          if (mod.emd1) {
-            totalNote += Number(document.getElementById(`${i}_emd1`).value) || 0;
-            diviseur++;
-          }
-          if (mod.emd2) {
-            totalNote += Number(document.getElementById(`${i}_emd2`).value) || 0;
-            diviseur++;
-          }
-          if (mod.td) {
-            totalNote += Number(document.getElementById(`${i}_td`).value) || 0;
-            diviseur++;
-          }
-          if (mod.tp) {
-            let tpNote = Number(document.getElementById(`${i}_tp`).value) || 0;
-            totalNote += mod.tpDouble ? tpNote * 2 : tpNote;
-            diviseur += mod.tpDouble ? 2 : 1;
+          const emd1Value = mod.emd1 ? document.getElementById(`${i}_emd1`)?.value.replace(',', '.') : null;
+          const emd2Value = mod.emd2 ? document.getElementById(`${i}_emd2`)?.value.replace(',', '.') : null;
+          const tdValue = mod.td ? document.getElementById(`${i}_td`)?.value.replace(',', '.') : null;
+          const tpValue = mod.tp ? document.getElementById(`${i}_tp`)?.value.replace(',', '.') : null;
+          
+          if ((emd1Value && emd1Value.trim() !== '') || (emd2Value && emd2Value.trim() !== '') || (tdValue && tdValue.trim() !== '') || (tpValue && tpValue.trim() !== '')) {
+              isModuleFilled = true;
           }
 
-          moyenne = diviseur > 0 ? totalNote / diviseur : 0;
+          const emd1 = emd1Value ? parseFloat(emd1Value) : NaN;
+          const emd2 = emd2Value ? parseFloat(emd2Value) : NaN;
+
+          if (!isNaN(emd1) && !isNaN(emd2)) {
+            totalPondere += (emd1 + emd2) / 2;
+            totalCoefsModule += 1;
+          } else if (!isNaN(emd1)) {
+            totalPondere += emd1;
+            totalCoefsModule += 1;
+          } else if (!isNaN(emd2)) {
+            totalPondere += emd2;
+            totalCoefsModule += 1;
+          }
+          
+          if (tdValue && !isNaN(parseFloat(tdValue))) {
+            totalPondere += parseFloat(tdValue);
+            totalCoefsModule += 1;
+          }
+          
+          if (tpValue && !isNaN(parseFloat(tpValue))) {
+            totalPondere += parseFloat(tpValue) * 2;
+            totalCoefsModule += 2;
+          }
+
+          moyenneModule = totalCoefsModule > 0 ? totalPondere / totalCoefsModule : 0;
         }
 
-        document.getElementById(`${i}_moyenne_module`).textContent = `Moyenne du module : ${moyenne.toFixed(2)}`;
-
-        if (moyenne < 5) modulesMoinsDe5.push(mod.nom);
-        else if (moyenne < 10) modulesMoinsDe10.push(mod.nom);
-
-        total += moyenne * mod.coef;
-        totalCoef += mod.coef;
+        document.getElementById(`${i}moyennemodule`).textContent = isModuleFilled ? `Moyenne : ${moyenneModule.toFixed(2)}` : 'Moyenne : --';
+        
+        if (isModuleFilled) {
+            if (moyenneModule < 5) modulesMoinsDe5.push(mod.nom);
+            else if (moyenneModule < 10) modulesMoinsDe10.push(mod.nom);
+            
+            totalPoints += moyenneModule * mod.coef;
+            totalCoefsAnnee += mod.coef;
+        }
       });
 
-      const moyenneGenBrute = total / totalCoef;
-      const moyenneGen = moyenneGenBrute.toFixed(3);
+      const moyenneGen = totalCoefsAnnee > 0 ? (totalPoints / totalCoefsAnnee).toFixed(3) : 0;
+      const resultatDiv = document.getElementById("resultat");
+      resultatDiv.classList.remove("show-result");
+      
+      let htmlResultat = `<div class="alert"><i class="ph ph-equals"></i> Moyenne générale : <strong>${moyenneGen}</strong></div>`;
 
-      let html = `<div class="alert">Moyenne générale : <strong>${moyenneGen}</strong></div>`;
-
-      if (moyenneGenBrute >= 10 && modulesMoinsDe5.length === 0) {
-        html += `<div class="alert success">Félicitations 🎉, année validée.</div>`;
-      } else if (moyenneGenBrute < 10 && modulesMoinsDe5.length > 0) {
-        html += `<div class="alert danger"><strong>Année non validée</strong><br>Moyenne insuffisante + modules < 5.</div>`;
-        html += `<div class="alert warning">Modules < 5 :<ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-        html += `<div class="alert warning">Modules entre 5 et 10 :<ul>${modulesMoinsDe10.filter(m => !modulesMoinsDe5.includes(m)).map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-      } else if (modulesMoinsDe5.length > 0) {
-        html += `<div class="alert danger">Rattrapage obligatoire dans les modules suivants :<ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-      } else if (moyenneGenBrute < 10) {
-        html += `<div class="alert warning">Moyenne générale insuffisante. Modules < 10 :<ul>${modulesMoinsDe10.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+      if (moyenneGen >= 10 && modulesMoinsDe5.length === 0) {
+        htmlResultat += `<div class="alert success"><i class="ph ph-medal"></i> Félicitations 🎉, année validée.</div>`;
+      } else {
+          if (moyenneGen < 10) {
+              htmlResultat += `<div class="alert danger"><i class="ph ph-warning"></i> Année non validée (moyenne < 10).</div>`;
+          }
+          if (modulesMoinsDe5.length > 0) {
+              htmlResultat += `<div class="alert danger"><i class="ph ph-warning"></i> Rattrapage obligatoire pour note(s) < 5 : <ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+          }
+          if (modulesMoinsDe10.length > 0) {
+              htmlResultat += `<div class="alert warning"><i class="ph ph-list"></i> Modules à compenser (note entre 5 et 10) : <ul>${modulesMoinsDe10.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+          }
       }
-
-      document.getElementById("resultat").innerHTML = html;
+      
+      resultatDiv.innerHTML = htmlResultat;
+      void resultatDiv.offsetWidth;
+      setTimeout(() => resultatDiv.classList.add("show-result"), 20);
     }
 
     function saveResults() {
       let data = {};
       modules.forEach((mod, i) => {
-        data[`${i}_manual_moyenne_cb`] = document.getElementById(`${i}_manual_moyenne_cb`).checked;
-        data[`${i}_manual_moyenne`] = document.getElementById(`${i}_manual_moyenne`).value;
-        if (mod.emd1) data[`${i}_emd1`] = document.getElementById(`${i}_emd1`).value;
-        if (mod.emd2) data[`${i}_emd2`] = document.getElementById(`${i}_emd2`).value;
-        if (mod.td) data[`${i}_td`] = document.getElementById(`${i}_td`).value;
-        if (mod.tp) data[`${i}_tp`] = document.getElementById(`${i}_tp`).value;
+        data[`${i}manualmoyennecb`] = document.getElementById(`${i}manualmoyenne_cb`).checked;
+        data[`${i}manualmoyenne`] = document.getElementById(`${i}manualmoyenne`).value;
+        if (mod.emd1) data[`${i}emd1`] = document.getElementById(`${i}_emd1`).value;
+        if (mod.emd2) data[`${i}emd2`] = document.getElementById(`${i}_emd2`).value;
+        if (mod.td) data[`${i}td`] = document.getElementById(`${i}_td`).value;
+        if (mod.tp) data[`${i}tp`] = document.getElementById(`${i}_tp`).value;
       });
       localStorage.setItem("annee2_results", JSON.stringify(data));
-      alert("Résultats enregistrés !");
+      showNotification("Résultats enregistrés avec succès !", 'success');
     }
 
     function loadResults() {
-      let data = JSON.parse(localStorage.getItem("annee2_results") || '{}');
+      const savedData = localStorage.getItem("annee2_results");
+      if (!savedData) {
+          showNotification("Aucune donnée enregistrée trouvée.", 'warning');
+          return;
+      }
+      let data = JSON.parse(savedData);
       modules.forEach((mod, i) => {
-        if (typeof data[`${i}_manual_moyenne_cb`] !== "undefined") {
-          document.getElementById(`${i}_manual_moyenne_cb`).checked = data[`${i}_manual_moyenne_cb`];
-        }
-        if (typeof data[`${i}_manual_moyenne`] !== "undefined") {
-          document.getElementById(`${i}_manual_moyenne`).value = data[`${i}_manual_moyenne`];
-        }
-        if (mod.emd1 && typeof data[`${i}_emd1`] !== "undefined") document.getElementById(`${i}_emd1`).value = data[`${i}_emd1`];
-        if (mod.emd2 && typeof data[`${i}_emd2`] !== "undefined") document.getElementById(`${i}_emd2`).value = data[`${i}_emd2`];
-        if (mod.td && typeof data[`${i}_td`] !== "undefined") document.getElementById(`${i}_td`).value = data[`${i}_td`];
-        if (mod.tp && typeof data[`${i}_tp`] !== "undefined") document.getElementById(`${i}_tp`).value = data[`${i}_tp`];
-        toggleManualMoyenne(i);
+          document.getElementById(`${i}manualmoyenne_cb`).checked = data[`${i}manualmoyennecb`] || false;
+          document.getElementById(`${i}manualmoyenne`).value = data[`${i}manualmoyenne`] || "";
+          if (mod.emd1) document.getElementById(`${i}_emd1`).value = data[`${i}emd1`] || "";
+          if (mod.emd2) document.getElementById(`${i}_emd2`).value = data[`${i}emd2`] || "";
+          if (mod.td) document.getElementById(`${i}_td`).value = data[`${i}td`] || "";
+          if (mod.tp) document.getElementById(`${i}_tp`).value = data[`${i}tp`] || "";
+          
+          toggleManualMoyenne(i);
       });
       calculer();
-      alert("Résultats chargés !");
+      showNotification("Résultats chargés avec succès !", 'success');
     }
 
-    window.onload = () => {
-      modules.forEach((mod, i) => {
-        toggleManualMoyenne(i);
-      });
-    };
-  </script></body>
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notification-container');
+      const notif = document.createElement('div');
+      notif.className = `notification ${type}`;
+      
+      let iconClass = 'ph-check-circle';
+      if (type === 'warning') iconClass = 'ph-warning-circle';
+
+      notif.innerHTML = `<i class="ph ${iconClass}"></i> ${message}`;
+      
+      container.appendChild(notif);
+      
+      setTimeout(() => {
+        notif.classList.add('fade-out');
+        notif.addEventListener('animationend', () => {
+          notif.remove();
+        });
+      }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
 </html>

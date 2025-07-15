@@ -1,76 +1,222 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Calculateur de Moyenne – Médecine Dentaire Oran</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculateur de Moyenne - Médecine Dentaire Oran</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/phosphor-icons"></script>
   <style>
+    :root {
+      --primary: #4f8cff;
+      --accent: #18a689;
+      --danger: #ff647c;
+      --success: #5ec576;
+      --bg: #f6faff;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --blur: 12px;
+      --radius: 18px;
+      --font: 'Inter', sans-serif;
+      --shadow: 0 6px 30px rgba(79, 140, 255, 0.09), 0 1.5px 6px rgba(79, 140, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
-      font-family: sans-serif;
-      background-color: #f3f3f3;
+      font-family: var(--font);
+      background: linear-gradient(120deg, #e0eafc, #cfdef3);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      padding: 32px 0 12px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow);
       text-align: center;
-      padding: 40px;
+      color: #fff;
     }
-    h1 {
-      color: #2e5c4d;
-      margin-bottom: 40px;
+
+    header h1 {
+      margin: 0;
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
     }
-    h2 {
-      color: #333;
-      margin-top: 50px;
+
+    .content {
+      width: 100%;
+      max-width: 520px;
+      margin-top: 28px;
+      padding: 0 12px 32px;
+      animation: fadeInUp 0.6s ease-out;
     }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .module {
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px 18px;
+      margin: 22px 0;
+      text-align: center;
+    }
+
+    .module h3 {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 0 16px;
+      color: var(--primary);
+    }
+    
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+    }
+
     .btn {
-      display: block;
-      width: 80%;
-      max-width: 300px;
-      margin: 12px auto;
-      padding: 15px;
-      font-size: 17px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: var(--radius);
+      padding: 14px 24px;
+      font-size: 1.1em;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      width: 80%;
+      max-width: 320px;
       text-decoration: none;
     }
-    .btn:hover {
-      opacity: 0.9;
+
+    .btn:active { transform: scale(0.96); }
+    .btn:hover { filter: brightness(1.1); }
+
+    .btn-disabled {
+      background: linear-gradient(90deg, #8a9a95, #a3b1ad);
+      cursor: not-allowed;
     }
-    .btn-1A { background-color: #4CAF50; }
-    .btn-2A { background-color: #3f51b5; }
-    .btn-disabled { background-color: #999; }
+    .btn-disabled:hover {
+      filter: brightness(1); /* Désactiver l'effet hover */
+    }
+
+    #notification-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .notification {
+      padding: 14px 22px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      animation: slideInUp 0.4s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .notification.fade-out {
+      animation: fadeOutDown 0.4s ease-in forwards;
+    }
+    
+    @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
+
+    .notification.warning { background: #f39c12; }
+
   </style>
-  <script>
-    function bientotDisponible() {
-      alert("Bientôt disponible !");
-    }
-  </script>
 </head>
 <body>
 
-  <h1>Calculateur de Moyenne<br>Médecine Dentaire Oran</h1>
+  <header>
+    <h1><i class="ph ph-student"></i> Calculateur de Moyenne</h1>
+  </header>
 
-  <h2>🦷 Médecine Dentaire</h2>
-  <a href="annee1.html" class="btn btn-1A">1ère Année</a>
-  <a href="annee2.html" class="btn btn-2A">2ème Année</a>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">3ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">4ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">5ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">6ème Année</button>
+  <div class="content">
+    
+    <div class="module">
+      <h3><i class="ph ph-tooth"></i> Médecine Dentaire</h3>
+      <div class="button-group">
+        <button type="button" class="btn btn-disabled" onclick="showNotification('Bientôt disponible !', 'warning')">1ère Année</button>
+        <a href="annee2.html" class="btn">2ème Année</a>
+        <button type="button" class="btn btn-disabled" onclick="showNotification('Bientôt disponible !', 'warning')">3ème Année</button>
+        <button type="button" class="btn btn-disabled" onclick="showNotification('Bientôt disponible !', 'warning')">4ème Année</button>
+        <button type="button" class="btn btn-disabled" onclick="showNotification('Bientôt disponible !', 'warning')">5ème Année</button>
+        <button type="button" class="btn btn-disabled" onclick="showNotification('Bientôt disponible !', 'warning')">6ème Année</button>
+      </div>
+    </div>
+    
+    <div class="module">
+      <h3><i class="ph ph-pill"></i> Pharmacie</h3>
+    </div>
 
-  <h2>💊 Pharmacie</h2>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">1ère Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">2ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">3ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">4ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">5ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">6ème Année</button>
+    <div class="module">
+      <h3><i class="ph ph-first-aid-kit"></i> Médecine</h3>
+    </div>
 
-  <h2>🩺 Médecine</h2>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">1ère Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">2ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">3ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">4ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">5ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">6ème Année</button>
-  <button onclick="bientotDisponible()" class="btn btn-disabled">7ème Année</button>
+  </div>
+
+  <div id="notification-container"></div>
+
+  <script>
+    function showNotification(message, type = 'warning') {
+      const container = document.getElementById('notification-container');
+      const notif = document.createElement('div');
+      notif.className = `notification ${type}`;
+      
+      let iconClass = 'ph-info';
+      if (type === 'warning') iconClass = 'ph-warning-circle';
+
+      notif.innerHTML = `<i class="ph ${iconClass}"></i> ${message}`;
+      
+      container.appendChild(notif);
+      
+      setTimeout(() => {
+        notif.classList.add('fade-out');
+        notif.addEventListener('animationend', () => {
+          notif.remove();
+        });
+      }, 2500); // La notification disparaît après 2.5 secondes
+    }
+  </script>
 
 </body>
 </html>
