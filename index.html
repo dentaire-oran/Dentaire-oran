@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -6,6 +6,9 @@
   <title>Calculateur de Moyenne - Médecine Dentaire Oran</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/phosphor-icons"></script>
+  
+  <link rel="manifest" href="manifest.json">
+  
   <style>
     :root {
       --primary: #4f8cff;
@@ -160,8 +163,6 @@
     @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
 
-    .notification.warning { background: #f39c12; }
-
   </style>
 </head>
 <body>
@@ -215,6 +216,18 @@
           notif.remove();
         });
       }, 2500); // La notification disparaît après 2.5 secondes
+    }
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').then(registration => {
+          console.log('ServiceWorker enregistré avec succès:', registration.scope);
+        }).catch(error => {
+          console.log('Échec de l\'enregistrement du ServiceWorker:', error);
+        });
+      });
     }
   </script>
 
