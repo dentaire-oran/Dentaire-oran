@@ -1,5 +1,5 @@
 {
-  "name": "Calculateur de Moyenne Médicale",
+  "name": "My med calculator",
   "short_name": "CalcMoyenne",
   "start_url": "/Dentaire-oran/",
   "display": "standalone",
