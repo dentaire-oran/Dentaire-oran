@@ -1,10 +1,11 @@
-const CACHE_NAME = 'version-5'; // <-- On passe à la version 5
+const CACHE_NAME = 'version-6'; // <-- On passe à la version 5
 // Liste des fichiers à mettre en cache
 const urlsToCache = [
-  'index.html',     // <-- J'ai enlevé le slash
-  'annee2.html',    // <-- J'ai enlevé le slash
-  'images/icon-192x192.png',
-  'images/icon-512x512.png'
+  '/Dentaire-oran/',
+  '/Dentaire-oran/index.html',
+  '/Dentaire-oran/annee2.html',
+  '/Dentaire-oran/images/icon-192x192.png',
+  '/Dentaire-oran/images/icon-512x512.png'
 ];
 
 // ... le reste du fichier ne change pas ...
