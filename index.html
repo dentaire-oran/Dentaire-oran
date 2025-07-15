@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/phosphor-icons"></script>
   
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="/Dentaire-oran/manifest.json">
   
   <style>
     :root {
@@ -220,16 +220,10 @@
   </script>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js').then(registration => {
-          console.log('ServiceWorker enregistré avec succès:', registration.scope);
-        }).catch(error => {
-          console.log('Échec de l\'enregistrement du ServiceWorker:', error);
-        });
-      });
-    }
-  </script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/Dentaire-oran/service-worker.js');
+  }
+</script>
 
 </body>
 </html>
