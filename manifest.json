@@ -1,21 +1,21 @@
 {
-  "name": "My med calculator",
-  "short_name": "CalcMoyenne",
-  "start_url": "/Dentaire-oran/",
+  "name": "Your Dental Guide",
+  "short_name": "DentalGuide",
+  "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#28a745",
-  "description": "Calcule la moyenne pour les filières de médecine, pharmacie et dentaire.",
+  "background_color": "#f6faff",
+  "theme_color": "#4f8cff",
+  "description": "Votre guide pour les études de médecine dentaire : cours, QCM et calcul de moyenne.",
   "icons": [
-  {
-    "src": "/Dentaire-oran/images/icon-192x192.png",
-    "type": "image/png",
-    "sizes": "192x192"
-  },
-  {
-    "src": "/Dentaire-oran/images/icon-512x512.png",
-    "type": "image/png",
-    "sizes": "512x512"
-  }
-]
+    {
+      "src": "/images/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
 }
