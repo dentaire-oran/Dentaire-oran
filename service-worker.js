@@ -1,14 +1,16 @@
-const CACHE_NAME = 'version-6'; // <-- On passe à la version 5
-// Liste des fichiers à mettre en cache
+const CACHE_NAME = 'dental-guide-v1';
+
+// Liste des fichiers à mettre en cache pour "Your Dental Guide"
 const urlsToCache = [
-  '/Dentaire-oran/',
-  '/Dentaire-oran/index.html',
-  '/Dentaire-oran/annee2.html',
-  '/Dentaire-oran/images/icon-192x192.png',
-  '/Dentaire-oran/images/icon-512x512.png'
+  '/',
+  '/index.html',
+  '/Cours/index.html',
+  '/Qcm/index.html',
+  '/Moyenne/index.html',
+  '/images/icon-192x192.png',
+  '/images/icon-512x512.png'
 ];
 
-// ... le reste du fichier ne change pas ...
 // Installe le Service Worker et met les fichiers en cache
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -20,7 +22,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// Récupère le contenu depuis le cache s'il est disponible
+// Récupère le contenu depuis le cache s'il est disponible, sinon depuis le réseau
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
